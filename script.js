@@ -9,6 +9,9 @@ const zeroCountEl = document.getElementById("zeroCount");
 const powerCountEl = document.getElementById("powerCount");
 
 const attendanceGoal = 50;
+const STORAGE_TOTAL_KEY = "totalAttendees";
+const STORAGE_TEAM_COUNTS_KEY = "teamCounts";
+const STORAGE_ATTENDEE_LIST_KEY = "attendeeList";
 
 let totalAttendees = 0;
 let teamCounts = {
@@ -26,15 +29,15 @@ const teamLabels = {
 };
 
 function saveAttendanceData() {
-	localStorage.setItem("totalAttendees", String(totalAttendees));
-	localStorage.setItem("teamCounts", JSON.stringify(teamCounts));
-	localStorage.setItem("attendeeList", JSON.stringify(attendeeList));
+	localStorage.setItem(STORAGE_TOTAL_KEY, String(totalAttendees));
+	localStorage.setItem(STORAGE_TEAM_COUNTS_KEY, JSON.stringify(teamCounts));
+	localStorage.setItem(STORAGE_ATTENDEE_LIST_KEY, JSON.stringify(attendeeList));
 }
 
 function loadAttendanceData() {
-	const savedTotal = localStorage.getItem("totalAttendees");
-	const savedTeamCounts = localStorage.getItem("teamCounts");
-	const savedAttendeeList = localStorage.getItem("attendeeList");
+	const savedTotal = localStorage.getItem(STORAGE_TOTAL_KEY);
+	const savedTeamCounts = localStorage.getItem(STORAGE_TEAM_COUNTS_KEY);
+	const savedAttendeeList = localStorage.getItem(STORAGE_ATTENDEE_LIST_KEY);
 
 	if (savedTotal !== null) {
 		totalAttendees = Number(savedTotal);
@@ -113,7 +116,9 @@ function ensureAttendeeListUI() {
 
 		attendeeSection.appendChild(title);
 		attendeeSection.appendChild(list);
-		teamStats.appendChild(attendeeSection);
+		if (teamStats) {
+			teamStats.appendChild(attendeeSection);
+		}
 	}
 }
 
@@ -121,11 +126,14 @@ function renderAttendeeList() {
 	ensureAttendeeListUI();
 
 	const list = document.getElementById("attendeeList");
+
+	if (!list) {
+		return;
+	}
+
 	list.innerHTML = "";
 
-	let index = attendeeList.length - 1;
-
-	while (index >= 0) {
+	for (let index = attendeeList.length - 1; index >= 0; index -= 1) {
 		const attendee = attendeeList[index];
 		const item = document.createElement("li");
 
@@ -137,8 +145,21 @@ function renderAttendeeList() {
 		item.textContent = `${attendee.name} — ${teamLabels[attendee.team]}`;
 
 		list.appendChild(item);
-		index -= 1;
 	}
+}
+
+function isValidCheckIn(name, team) {
+	return Boolean(name && team);
+}
+
+function addAttendee(name, team) {
+	totalAttendees += 1;
+	teamCounts[team] += 1;
+
+	attendeeList.push({
+		name: name,
+		team: team,
+	});
 }
 
 function showGreeting(name, teamKey) {
@@ -159,17 +180,11 @@ function handleCheckIn(event) {
 	const attendeeName = attendeeNameInput.value.trim();
 	const selectedTeam = teamSelect.value;
 
-	if (!attendeeName || !selectedTeam) {
+	if (!isValidCheckIn(attendeeName, selectedTeam)) {
 		return;
 	}
 
-	totalAttendees += 1;
-	teamCounts[selectedTeam] += 1;
-
-	attendeeList.push({
-		name: attendeeName,
-		team: selectedTeam,
-	});
+	addAttendee(attendeeName, selectedTeam);
 
 	updateAttendanceDisplay();
 	renderAttendeeList();
