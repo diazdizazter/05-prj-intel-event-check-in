@@ -1,8 +1,8 @@
 const checkInForm = document.getElementById("checkInForm");
 const attendeeNameInput = document.getElementById("attendeeName");
 const teamSelect = document.getElementById("teamSelect");
-const greeting = document.getElementById("greeting");
-const attendeeCountEl = document.getElementById("attendeeCount");
+const helloHello = document.getElementById("greeting");
+const moronCountEl = document.getElementById("attendeeCount");
 const progressBar = document.getElementById("progressBar");
 const waterCountEl = document.getElementById("waterCount");
 const zeroCountEl = document.getElementById("zeroCount");
@@ -20,21 +20,21 @@ let teamCounts = {
 	power: 0,
 };
 
-let attendeeList = [];
+let moronList = [];
 
 const teamLabels = {
-	water: "Team Water Wise",
-	zero: "Team Net Zero",
-	power: "Team Renewables",
+	water: "bong",
+	zero: "zilch",
+	power: "zap",
 };
 
-function saveAttendanceData() {
+function saveGoAwayData() {
 	localStorage.setItem(STORAGE_TOTAL_KEY, String(totalAttendees));
 	localStorage.setItem(STORAGE_TEAM_COUNTS_KEY, JSON.stringify(teamCounts));
-	localStorage.setItem(STORAGE_ATTENDEE_LIST_KEY, JSON.stringify(attendeeList));
+	localStorage.setItem(STORAGE_ATTENDEE_LIST_KEY, JSON.stringify(moronList));
 }
 
-function loadAttendanceData() {
+function loadGoAwayData() {
 	const savedTotal = localStorage.getItem(STORAGE_TOTAL_KEY);
 	const savedTeamCounts = localStorage.getItem(STORAGE_TEAM_COUNTS_KEY);
 	const savedAttendeeList = localStorage.getItem(STORAGE_ATTENDEE_LIST_KEY);
@@ -59,7 +59,7 @@ function loadAttendanceData() {
 		const parsedAttendeeList = JSON.parse(savedAttendeeList);
 
 		if (Array.isArray(parsedAttendeeList)) {
-			attendeeList = parsedAttendeeList;
+			moronList = parsedAttendeeList;
 		}
 	}
 }
@@ -78,8 +78,8 @@ function getWinningTeamName() {
 	return teamLabels[winningKey];
 }
 
-function updateAttendanceDisplay() {
-	attendeeCountEl.textContent = String(totalAttendees);
+function updateGoAwayDisplay() {
+	moronCountEl.textContent = String(totalAttendees);
 
 	const progressPercent = Math.min((totalAttendees / attendanceGoal) * 100, 100);
 	progressBar.style.width = `${progressPercent}%`;
@@ -89,7 +89,7 @@ function updateAttendanceDisplay() {
 	powerCountEl.textContent = String(teamCounts.power);
 }
 
-function ensureAttendeeListUI() {
+function ensureMoronListUI() {
 	let attendeeSection = document.getElementById("attendeeListSection");
 
 	if (!attendeeSection) {
@@ -122,8 +122,8 @@ function ensureAttendeeListUI() {
 	}
 }
 
-function renderAttendeeList() {
-	ensureAttendeeListUI();
+function renderMoronList() {
+	ensureMoronListUI();
 
 	const list = document.getElementById("attendeeList");
 
@@ -133,8 +133,8 @@ function renderAttendeeList() {
 
 	list.innerHTML = "";
 
-	for (let index = attendeeList.length - 1; index >= 0; index -= 1) {
-		const attendee = attendeeList[index];
+	for (let index = moronList.length - 1; index >= 0; index -= 1) {
+		const attendee = moronList[index];
 		const item = document.createElement("li");
 
 		item.style.background = "#f8fafc";
@@ -152,26 +152,26 @@ function isValidCheckIn(name, team) {
 	return Boolean(name && team);
 }
 
-function addAttendee(name, team) {
+function addMoron(name, team) {
 	totalAttendees += 1;
 	teamCounts[team] += 1;
 
-	attendeeList.push({
+	moronList.push({
 		name: name,
 		team: team,
 	});
 }
 
-function showGreeting(name, teamKey) {
+function helloHelloMessage(name, teamKey) {
 	if (totalAttendees >= attendanceGoal) {
 		const winner = getWinningTeamName();
-		greeting.textContent = `🎉 Goal reached! Welcome, ${name} from ${teamLabels[teamKey]}. Current winning team: ${winner}.`;
+		helloHello.textContent = `🎉 Goal reached! Welcome, ${name} from ${teamLabels[teamKey]}. Current winning team: ${winner}.`;
 	} else {
-		greeting.textContent = `Welcome, ${name}! You are checked in with ${teamLabels[teamKey]}.`;
+		helloHello.textContent = `Welcome, ${name}! You are checked in with ${teamLabels[teamKey]}.`;
 	}
 
-	greeting.classList.add("success-message");
-	greeting.style.display = "block";
+	helloHello.classList.add("success-message");
+	helloHello.style.display = "block";
 }
 
 function handleCheckIn(event) {
@@ -184,21 +184,21 @@ function handleCheckIn(event) {
 		return;
 	}
 
-	addAttendee(attendeeName, selectedTeam);
+	addMoron(attendeeName, selectedTeam);
 
-	updateAttendanceDisplay();
-	renderAttendeeList();
-	showGreeting(attendeeName, selectedTeam);
-	saveAttendanceData();
+	updateGoAwayDisplay();
+	renderMoronList();
+	helloHelloMessage(attendeeName, selectedTeam);
+	saveGoAwayData();
 
 	checkInForm.reset();
 	attendeeNameInput.focus();
 }
 
 function initializeApp() {
-	loadAttendanceData();
-	updateAttendanceDisplay();
-	renderAttendeeList();
+	loadGoAwayData();
+	updateGoAwayDisplay();
+	renderMoronList();
 	checkInForm.addEventListener("submit", handleCheckIn);
 }
 
